@@ -30,7 +30,6 @@ int high=2;
 
 //margin za nalaganje slike
 int margin=50;
-int indexFilter =0;
 
 //dimenzije nalozene slike
 int uploadX;
@@ -38,7 +37,6 @@ int uploadY;
 
 String imageLoc2="";
 String imageName="";
-boolean imageLoaded = false;
 
 //naslovi nalozenih slik
 String [] imageLoc=new String[6];
@@ -46,7 +44,7 @@ String [] imageLoc=new String[6];
 //lokacija osnovne slike;
 
 void setup() {
-    size(1000, 800);
+    size(400, 400);
   selectInput("Select a file to process:", "fileSelected");
 }
 
@@ -103,21 +101,11 @@ for(int i=0; i<6; i++){
     println("upload: "+upload.height+", "+upload.width);
     //println("invart: "+invert.height+", "+invert.width);
     //invert.filter(INVERT);    
-    
+    image(upload, margin,margin);
      //image(invert, 0,0);
   
-    imageLoaded = true;
   
-  
-}
-
-void draw() {  
-  
-  if(imageLoaded){
-     image(upload, margin,margin);
-  }
- 
-     //narisi gumbe spodaj
+  //narisi gumbe spodaj
   for(int i=0; i<6; i++){
       int x=margin+i*50;
       fill(255,0,0);
@@ -126,17 +114,22 @@ void draw() {
   }  
  //narisi gumb za render
   rect(0,0,60,50);
+  
+}
+
+void draw() {  
+     
 }
 
 //resizes the image from given location on disk 
 //max 300x300 px
 PImage uploadImage(String location, PImage goal){
   goal=loadImage(location);
-  if(goal.height>700){
-      goal.resize(0,700);
+  if(goal.height>300){
+      goal.resize(0,300);
   }
-  if(goal.width>700){
-      goal.resize(700,0);
+  if(goal.width>300){
+      goal.resize(300,0);
   }
   uploadX=goal.width;
   uploadY=goal.height;
@@ -152,37 +145,6 @@ void mouseDragged(){
   ellipse(mouseX, mouseY, big,big);   
 }
 
-int startX = mouseX-margin-20;
-int startY = mouseY-margin-20;
-if(startX < 0)
-  startX = 0;
- if(startY < 0)
-   startY = 0;
-
-for (int x = startX; x < upload.width && x < mouseX -margin+ 20; x++) {
-    for (int y = startY; y < upload.height && y < mouseY -margin+ 20; y++ ) {
-      int loc = x + y*upload.width;
-     // int izd= x + y*upload.width;
-      // Test the brightness against the threshold
-      //for(int i=0; i<6; i++){
-      //if (red(source.pixels[loc])==red(barva[i])&& green(source.pixels[loc])==green(barva[i])&& blue(source.pixels[loc])==blue(barva[i])) {
-      //  destination.pixels[loc]  = filters[i].pixels[loc];//color(255,0,0);  // red
-      //}  else {
-      //  //destination.pixels[loc]  = filters[3].pixels[loc];    // blue
-      //}
-      upload.pixels[loc]  = filters[indexFilter].pixels[loc];
-      print(x);
-     // }
-      //ozadna slika
-     if (red(upload.pixels[loc])==red(barva[0])&& green(upload.pixels[loc])==green(barva[0])&& blue(upload.pixels[loc])==blue(barva[0])){
-      upload.pixels[loc]  = upload.pixels[loc];
-     }
-      
-      
-    }
-}
- upload.updatePixels();
-
 }
 void mousePressed(){
   
@@ -192,7 +154,6 @@ void mousePressed(){
      if(mouseX>x&&mouseX<x+48&&mouseY<height-10&&mouseY>height-30){
                  fillColor=40*i;
                  //print(fillColor);
-                 indexFilter =i;
      }    
   }
   
@@ -205,7 +166,7 @@ void mousePressed(){
    }
   
   
-  if(mouseX<60&&mouseX>0&&mouseY>0&&mouseY<50 || true){
+  if(mouseX<60&&mouseX>0&&mouseY>0&&mouseY<50){
       //dobi sliko na ekranu
   source=get(50,50,upload.width,upload.height);
 
@@ -216,24 +177,22 @@ println(destination.pixels[15]);
   source.loadPixels();
   destination.loadPixels();
 
-  destination = upload;
   
- /* 
+  
 //preglej vse piksle in določi kateri filter mora nastaviti
-  for (int x = mouseX-50; x < upload.width && x < mouseX -50+ 20; x++) {
-    for (int y = mouseY-50; y < upload.height && y < mouseY -50+ 20; y++ ) {
+  for (int x = 0; x < upload.width; x++) {
+    for (int y = 0; y < upload.height; y++ ) {
       int loc = x + y*upload.width;
      // int izd= x + y*upload.width;
       // Test the brightness against the threshold
-      //for(int i=0; i<6; i++){
-      //if (red(source.pixels[loc])==red(barva[i])&& green(source.pixels[loc])==green(barva[i])&& blue(source.pixels[loc])==blue(barva[i])) {
-      //  destination.pixels[loc]  = filters[i].pixels[loc];//color(255,0,0);  // red
-      //}  else {
-      //  //destination.pixels[loc]  = filters[3].pixels[loc];    // blue
-      //}
-      destination.pixels[loc]  = filters[indexFilter].pixels[loc];
-      print(x);
-     // }
+      for(int i=0; i<6; i++){
+      if (red(source.pixels[loc])==red(barva[i])&& green(source.pixels[loc])==green(barva[i])&& blue(source.pixels[loc])==blue(barva[i])) {
+        destination.pixels[loc]  = filters[i].pixels[loc];//color(255,0,0);  // red
+      }  else {
+        //destination.pixels[loc]  = filters[3].pixels[loc];    // blue
+      }
+      
+      }
       //ozadna slika
      if (red(destination.pixels[loc])==red(barva[0])&& green(destination.pixels[loc])==green(barva[0])&& blue(destination.pixels[loc])==blue(barva[0])){
       destination.pixels[loc]  = upload.pixels[loc];
@@ -243,12 +202,11 @@ println(destination.pixels[15]);
     }
   }
   
-*/
+
   // We changed the pixels in destination
   destination.updatePixels();
   // Display the destination
- //image(destination,50,50);
- upload = destination;
+ image(destination,50,50);
   //image(invert,50,50);
   destination.save("slika2");
   }
