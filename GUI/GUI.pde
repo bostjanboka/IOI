@@ -19,9 +19,11 @@ PImage [] filters=new PImage[6];
 
 
 //velikosti copicev
-int big=50;
-int middle=30;
-int small=10;
+int big=25;
+int middle=15;
+int small=5;
+
+int[] sizeF = new int[]{small, middle, big};
 
 //intenzivnosti uporabljenega filtra - oz stopnja uporabe stila
 int low=0;
@@ -31,6 +33,7 @@ int high=2;
 //margin za nalaganje slike
 int margin=50;
 int indexFilter =0;
+int indexSizeF = 1;
 
 //dimenzije nalozene slike
 int uploadX;
@@ -112,7 +115,8 @@ for(int i=0; i<6; i++){
 }
 
 void draw() {  
-  
+  clear();
+  background(220);
   if(imageLoaded){
      image(upload, margin,margin);
   }
@@ -124,8 +128,20 @@ void draw() {
       stroke(0,60,0);
       rect(x, height-30, 48, 20);
   }  
+  
+  for(int i=0; i < 3; i++){
+   int y = margin + sizeF[0] + i * sizeF[i]*2;
+   fill(255,0,0);
+   stroke(0,60,0);
+   ellipse(width-sizeF[2]-5, y, sizeF[i]*2, sizeF[i]*2);
+  }
  //narisi gumb za render
   rect(0,0,60,50);
+  fill(30,30,30,50);
+  if(mouseX> margin && mouseX < margin + upload.width && mouseY > margin && mouseY < margin + upload.height){
+    ellipse(mouseX, mouseY, sizeF[indexSizeF]*2, sizeF[indexSizeF]*2);
+  }
+  
 }
 
 //resizes the image from given location on disk 
@@ -144,23 +160,21 @@ PImage uploadImage(String location, PImage goal){
 }
 
 
-void mouseDragged(){
-  //barvaj ko se se pomikamo s pritisnjenim gumbom
-  if(mouseX<uploadX+margin&&mouseX>margin&&mouseY>margin&&mouseY<uploadY+margin){
-  fill(fillColor);
-  noStroke();
-  ellipse(mouseX, mouseY, big,big);   
-}
-
-int startX = mouseX-margin-20;
-int startY = mouseY-margin-20;
+void PaintImage(){
+ int startX = mouseX-margin-sizeF[indexSizeF];
+int startY = mouseY-margin-sizeF[indexSizeF];
 if(startX < 0)
   startX = 0;
  if(startY < 0)
    startY = 0;
 
-for (int x = startX; x < upload.width && x < mouseX -margin+ 20; x++) {
-    for (int y = startY; y < upload.height && y < mouseY -margin+ 20; y++ ) {
+for (int x = startX; x < upload.width && x < mouseX -margin+ sizeF[indexSizeF]; x++) {
+    for (int y = startY; y < upload.height-2 && y < mouseY -margin+ sizeF[indexSizeF]; y++ ) {
+      PVector r = new PVector(x - (mouseX-margin), y - (mouseY-margin));
+      if(r.mag() > sizeF[indexSizeF]){
+       continue; 
+      }
+      
       int loc = x + y*upload.width;
      // int izd= x + y*upload.width;
       // Test the brightness against the threshold
@@ -181,7 +195,13 @@ for (int x = startX; x < upload.width && x < mouseX -margin+ 20; x++) {
       
     }
 }
- upload.updatePixels();
+ upload.updatePixels(); 
+}
+
+void mouseDragged(){
+  PaintImage();
+
+
 
 }
 void mousePressed(){
@@ -195,7 +215,13 @@ void mousePressed(){
                  indexFilter =i;
      }    
   }
-  
+  for(int i=0; i < 3; i++){
+   int y = margin + sizeF[0] + i * sizeF[i]*2;
+   if(mouseX > width-sizeF[2]-5 - sizeF[i] && mouseX < width-sizeF[2]-5 + sizeF[i] && mouseY > y - sizeF[i] && mouseY < y + sizeF[i]){
+     indexSizeF = i;
+   }
+
+  }
   
   //pobarvaj sliko ob kliku z misko
   if(mouseX<uploadX+margin&&mouseX>margin&&mouseY>margin&&mouseY<uploadY+margin){
@@ -216,39 +242,9 @@ println(destination.pixels[15]);
   source.loadPixels();
   destination.loadPixels();
 
-  destination = upload;
+  //destination = upload;
   
- /* 
-//preglej vse piksle in določi kateri filter mora nastaviti
-  for (int x = mouseX-50; x < upload.width && x < mouseX -50+ 20; x++) {
-    for (int y = mouseY-50; y < upload.height && y < mouseY -50+ 20; y++ ) {
-      int loc = x + y*upload.width;
-     // int izd= x + y*upload.width;
-      // Test the brightness against the threshold
-      //for(int i=0; i<6; i++){
-      //if (red(source.pixels[loc])==red(barva[i])&& green(source.pixels[loc])==green(barva[i])&& blue(source.pixels[loc])==blue(barva[i])) {
-      //  destination.pixels[loc]  = filters[i].pixels[loc];//color(255,0,0);  // red
-      //}  else {
-      //  //destination.pixels[loc]  = filters[3].pixels[loc];    // blue
-      //}
-      destination.pixels[loc]  = filters[indexFilter].pixels[loc];
-      print(x);
-     // }
-      //ozadna slika
-     if (red(destination.pixels[loc])==red(barva[0])&& green(destination.pixels[loc])==green(barva[0])&& blue(destination.pixels[loc])==blue(barva[0])){
-      destination.pixels[loc]  = upload.pixels[loc];
-     }
-      
-      
-    }
-  }
-  
-*/
-  // We changed the pixels in destination
-  destination.updatePixels();
-  // Display the destination
- //image(destination,50,50);
- upload = destination;
+ PaintImage();
   //image(invert,50,50);
   destination.save("slika2");
   }
