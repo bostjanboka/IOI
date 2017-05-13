@@ -185,7 +185,7 @@ for (int x = startX; x < filters[indexFilter].width && x < mouseX -margin+ sizeF
       
       
       
-      float opac = 0.3;
+      float opac = 0.7;
       float iopac = 1- opac;
       
       color r = (int)(red(filters[indexFilter].pixels[loc])*opac);
