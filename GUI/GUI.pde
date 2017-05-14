@@ -16,6 +16,7 @@ color [] barva ={
 
 };
 int fillColor=0;
+float opacity = 0.7;
 
 //spremeljivke za array filtriranih slik
 PImage [] filters=new PImage[7];
@@ -134,12 +135,25 @@ void draw() {
    stroke(0,60,0);
    ellipse(width-sizeF[2]-5, y, sizeF[i]*2, sizeF[i]*2);
   }
+  rect(width-60, 300, 50, 50);
+  fill(0,0,0);
+  textSize(9);
+  text("Opacity " + opacity, width-60, 364);
+  textSize(20);
+  text("+",width-43, 330);
+  fill(255,0,0);
+  rect(width-60, 370, 50, 50);
+  fill(0,0,0);
+  textSize(20);
+  text("-",width-43, 400);
  //narisi gumb za render
   rect(0,0,60,50);
   fill(30,30,30,50);
   if(mouseX> margin && mouseX < margin + filters[0].width && mouseY > margin && mouseY < margin + filters[0].height){
     ellipse(mouseX, mouseY, sizeF[indexSizeF]*2, sizeF[indexSizeF]*2);
   }
+  
+  
   
 }
 
@@ -185,8 +199,8 @@ for (int x = startX; x < filters[indexFilter].width && x < mouseX -margin+ sizeF
       
       
       
-      float opac = 0.7;
-      float iopac = 1- opac;
+      float opac = opacity;
+      float iopac = 1- opacity;
       
       color r = (int)(red(filters[indexFilter].pixels[loc])*opac);
       color g = (int)(green(filters[indexFilter].pixels[loc])*opac);
@@ -218,6 +232,20 @@ void mouseDragged(){
 
 
 }
+
+void mouseClicked() {
+ if(mouseX > width-60 && mouseX < width-10 && mouseY > 300 && mouseY < 350){
+   if(opacity < 1){
+      opacity += 0.05; 
+   }
+ }
+ if(mouseX > width-60 && mouseX < width-10 && mouseY > 370 && mouseY < 420){
+   if(opacity > 0){
+      opacity -= 0.05; 
+   }
+ }
+}
+
 void mousePressed(){
    for(int i=0; i<6; i++){
      int x=margin+i*50;
